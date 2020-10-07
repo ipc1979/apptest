@@ -1,0 +1,70 @@
+Dependencias 
+go get "github.com/gin-gonic/gin"
+go get "github.com/google/logger"
+go get "github.com/spf13/viper"
+
+Coverage
+go test --cover ./... -v
+
+Test
+go test ./... -v
+
+Run 
+go run main.go
+
+Estructura 
+    controllers
+        Definen el comportamiento para cada llamada HTTP y hacen uso de los SERVICES/CASOS DE USO.
+    domain
+        Entidades que representan diferentes conceptos dentro de la aplicacion.
+    infra
+        Implementación de funcionalidades externas requeridas.
+    interfaces 
+        Contratos sobre los cuales la aplicación especifica necesidades externas.
+    libext
+        Implementación de algoritmos. 
+    services
+        Casos de uso de la aplicación. 
+
+Las dependencias son :
+    controllers > services > domain
+
+Algoritmos:
+
+    Location :
+        La idea es tomar uno de los satelites como centro de una circunferencia determinada por la distancia 
+    medida, para los puntos determinados por esa circunferencia se realiza el chequeo de la distancia a los 
+    demas satelites.
+        La posición se encuentra cuando las tres distancias son aproximandamente iguales a las medidas.
+
+    Messade:
+        Los mensajes se leen en orden de llegada y se toma uno por cada satelite. Por lo tanto se tiene 
+    Sat1: mensaje0, Sat2: mensaje0, Sat3: mensaje0 si de los tres mensajes se puede determinar uno para 
+    cargar, se realiza la misma .
+        Si en alguno de estos pasos no es posible determinar mensajes a cargar el algoritmo no podrá 
+    determinar el mensaje. 
+        Ejemplo de carga correcta
+        Ej: 1Lentura : Sat1: "A" , Sat2: ""  , Sat3: "" no hay mensajes para cargar
+            2Lentura : Sat1: "A" , Sat2: "B" , Sat3: "" los mensajes a cargar son "A" y "B" pero como "A" 
+            fue cargado anteriormente, cargamos "B"
+
+        Ejemplo de error al determinar el mensaje
+        Ej: 1Lentura : Sat1: ""  , Sat2: ""  , Sat3: "" no hay mensajes para cargar
+            2Lentura : Sat1: "A" , Sat2: "B" , Sat3: "" los mensajes a cargar son "A" y "B" pero es posible 
+            determinar el orden              
+
+Cloud:
+
+POST, GET https://appml-proj-cloud.uc.r.appspot.com/topsecret
+
+Test
+
+curl -X POST -d '{"Satellites": [{"name":"kenobi","distance":583.09,"message":["este","","","mensaje",""]},{"name":"skywalker","distance":223.6,"message":["","es","","","secreto"]},{"name":"sato","distance":500.0,"message":["este","","un","",""]}]}' 'https://appml-proj-cloud.uc.r.appspot.com/topsecret' -v
+
+curl -X GET 'https://appml-proj-cloud.uc.r.appspot.com/topsecret' -v
+
+POST, GET https://appml-proj-cloud.uc.r.appspot.com/topsecret_split/:satellite_name
+
+curl -X POST -d '{"distance":583.09,"message":["este","","","mensaje",""]}' 'https://appml-proj-cloud.uc.r.appspot.com/topsecret_split/kenobi' -v
+
+curl -X GET 'https://appml-proj-cloud.uc.r.appspot.com/topsecret_split' -v
